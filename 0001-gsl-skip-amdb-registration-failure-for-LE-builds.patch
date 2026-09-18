@@ -1,0 +1,16 @@
+diff --git a/gsl/src/gsl_dynamic_module_mgr.c b/gsl/src/gsl_dynamic_module_mgr.c
+index 3b2453c..4c70332 100644
+--- a/gsl/src/gsl_dynamic_module_mgr.c
++++ b/gsl/src/gsl_dynamic_module_mgr.c
+@@ -283,8 +283,9 @@ static int32_t gsl_do_register_dynamic_modules(uint32_t master_proc,
+ 			acdb_blob_rsp.buf_size);
+ 		rc = gsl_send_spf_cmd_wait_for_basic_rsp(&send_pkt, &rsp_signal);
+ 		if (rc) {
+-			GSL_ERR("Register modules cmd 0x%x failure:%d", spf_opcode, rc);
+-			goto free_shmem;
++			GSL_ERR("Register modules cmd 0x%x failure:%d, skip for LE builds", spf_opcode, rc);
++			//goto free_shmem;
++			rc = 0;
+ 		}
+
+ 		/* increment offset to be used in next loop iteration */
