@@ -1,0 +1,32 @@
+From: Chiluka Rohith <rchiluka@qti.qualcomm.com>
+Date: Wed, 24 Sep 2026 00:00:00 +0000
+Subject: [PATCH] gsl: skip AMDB registration failure for LE builds
+
+On Linux Embedded (LE) builds, the AMDB (Audio Module Database)
+registration command may fail when the DSP-side service is not
+fully initialized or when modules are not present in the ACDB
+blob. On LE platforms this is non-fatal -- the graph can still
+operate without all dynamic modules being registered.
+
+Treat the failure as a warning and continue instead of bailing
+out, to allow audio graph bring-up on LE targets like QCS6490.
+
+Signed-off-by: Chiluka Rohith <rchiluka@qti.qualcomm.com>
+---
+ gsl/src/gsl_dynamic_module_mgr.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- a/gsl/src/gsl_dynamic_module_mgr.c
++++ b/gsl/src/gsl_dynamic_module_mgr.c
+@@ -283,8 +283,9 @@ static int32_t gsl_do_register_dynamic_modules(uint32_t master_proc,
+ 			acdb_blob_rsp.buf_size);
+ 		rc = gsl_send_spf_cmd_wait_for_basic_rsp(&send_pkt, &rsp_signal);
+ 		if (rc) {
+-			GSL_ERR("Register modules cmd 0x%x failure:%d", spf_opcode, rc);
+-			goto free_shmem;
++			GSL_ERR("Register modules cmd 0x%x failure:%d, skip for LE builds", spf_opcode, rc);
++			//goto free_shmem;
++			rc = 0;
+ 		}
+
+ 		/* increment offset to be used in next loop iteration */

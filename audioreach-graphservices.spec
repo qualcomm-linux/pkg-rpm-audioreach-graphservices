@@ -2,11 +2,12 @@
 
 Name:           audioreach-graphservices
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        AudioReach graph service libraries
 License:        BSD-3-Clause
 URL:            https://github.com/Audioreach/audioreach-graphservices
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Patch0:         0001-gsl-skip-amdb-registration-failure-for-LE-builds.patch
 
 ExclusiveArch:  aarch64
 
@@ -17,7 +18,7 @@ BuildRequires:  automake
 BuildRequires:  libtool
 BuildRequires:  make
 BuildRequires:  gcc
-BuildRequires:  audioreach-kernel-headers
+BuildRequires:  audioreach-dkms-dev
 
 %description
 Provides cross-platform libraries for managing audio graphs
@@ -62,12 +63,16 @@ rm -f %{buildroot}%{_bindir}/ats_gateway
 %files
 %license LICENSE
 %{_libdir}/*.so.*
-%{_libdir}/*.so
+%{_libdir}/libar-acdb.so
+%{_libdir}/libar-ats.so
 
 %files devel
-%{_includedir}/*.h
-%{_includedir}/*/*.h
-%{_includedir}/*/*/*.h
+%{_includedir}/*
+%{_libdir}/libar-gsl.so
+%{_libdir}/libar-gpr.so
+%{_libdir}/libar-osal.so
+%{_libdir}/libar-util.so
+%{_libdir}/libar-spfhdrs.so
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
