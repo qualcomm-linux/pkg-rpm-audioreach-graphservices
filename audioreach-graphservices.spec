@@ -2,11 +2,12 @@
 
 Name:           audioreach-graphservices
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        AudioReach graph service libraries
 License:        BSD-3-Clause
 URL:            https://github.com/Audioreach/audioreach-graphservices
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Patch0:         0001-gsl-skip-amdb-registration-failure-for-LE-builds.patch
 
 ExclusiveArch:  aarch64
 
@@ -17,7 +18,7 @@ BuildRequires:  automake
 BuildRequires:  libtool
 BuildRequires:  make
 BuildRequires:  gcc
-BuildRequires:  audioreach-kernel-headers
+BuildRequires:  audioreach-linux-devel
 
 %description
 Provides cross-platform libraries for managing audio graphs
@@ -47,8 +48,9 @@ autoreconf -fi
     --without-cutils \
     --with-syslog \
     --with-dummy_diag \
-    --without-qcom \
-    --without-audio_dma_support \
+    --with-libdiag_headers \
+    --with-qcom \
+    --with-audio_dma_support \
     --without-ats_transport_tcp_ip \
     --without-ats_data_logging \
     --with-msm-audio-ion-disable
@@ -62,14 +64,21 @@ rm -f %{buildroot}%{_bindir}/ats_gateway
 %files
 %license LICENSE
 %{_libdir}/*.so.*
-%{_libdir}/*.so
+%{_libdir}/libar-acdb.so
+%{_libdir}/libar-ats.so
 
 %files devel
-%{_includedir}/*.h
-%{_includedir}/*/*.h
-%{_includedir}/*/*/*.h
+%{_includedir}/*
+%{_libdir}/libar-gsl.so
+%{_libdir}/libar-gpr.so
+%{_libdir}/libar-osal.so
+%{_libdir}/libar-util.so
+%{_libdir}/libar-spfhdrs.so
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Thu Jul 09 2026 Qualcomm Linux <quic_linux@quicinc.com> - 1.0.0-1
+* Tue Sep 08 2026 Chiluka Rohith <rchiluka@qti.qualcomm.com> - 1.0.0-2
+- Skip AMDB registration failure for LE builds to fix mixer_open failure
+
+* Thu Jul 09 2026 Chiluka Rohith <rchiluka@qti.qualcomm.com> - 1.0.0-1
 - Initial RPM packaging of audioreach-graphservices version 1.0.0
