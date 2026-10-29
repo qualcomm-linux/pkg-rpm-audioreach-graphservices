@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
 Name:           audioreach-graphservices
-Version:        1.0.0
-Release:        2%{?dist}
+Version:        1.0.2
+Release:        1%{?dist}
 Summary:        AudioReach graph service libraries
 License:        BSD-3-Clause
 URL:            https://github.com/Audioreach/audioreach-graphservices
@@ -77,6 +77,11 @@ rm -f %{buildroot}%{_bindir}/ats_gateway
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Oct 27 2026 Febin Francis <ffrancis@qti.qualcomm.com> - 1.0.2-1
+- Update to 1.0.2
+- Install GPR headers under the gpr/ include namespace
+- Fix memory-safety, leak and lock handling bugs
+
 * Tue Sep 08 2026 Chiluka Rohith <rchiluka@qti.qualcomm.com> - 1.0.0-2
 - Skip AMDB registration failure for LE builds to fix mixer_open failure
 
