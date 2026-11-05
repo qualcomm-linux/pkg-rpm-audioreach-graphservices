@@ -2,12 +2,14 @@
 
 Name:           audioreach-graphservices
 Version:        1.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        AudioReach graph service libraries
 License:        BSD-3-Clause
 URL:            https://github.com/Audioreach/audioreach-graphservices
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Patch0:         0001-gsl-skip-amdb-registration-failure-for-LE-builds.patch
+Patch1:         0001-api-Add-calibration-API-header-for-FNN_PLUS.patch
+Patch2:         0002-acdb-fix-status-overwrite-by-HW-Accel-check-in-AcdbG.patch
 
 ExclusiveArch:  aarch64
 
@@ -77,6 +79,11 @@ rm -f %{buildroot}%{_bindir}/ats_gateway
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Nov 05 2026 Karthik S <karthik.s@oss.qualcomm.com> - 1.0.2-2
+- Add spf/api/modules/fnn_plus_calibration_api_fvxv.h, 
+  defining MODULE_ID_FNN_PLUS and its calibration/configuration 
+  parameter structures, needed to support the FNN_PLUS fluence.
+
 * Tue Oct 27 2026 Febin Francis <ffrancis@qti.qualcomm.com> - 1.0.2-1
 - Update to 1.0.2
 - Install GPR headers under the gpr/ include namespace
