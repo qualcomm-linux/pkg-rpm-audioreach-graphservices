@@ -1,0 +1,47 @@
+From 57f7e9f4ab1165b88422ef060911b1bb083fd17a Mon Sep 17 00:00:00 2001
+From: Kumar Anurag <kumar.singh@oss.qualcomm.com>
+Date: Wed, 18 Nov 2026 16:30:32 +0530
+Subject: [PATCH] acdb: fix status overwrite by HW Accel check in
+ AcdbGetSubgraphCalibration
+
+AcdbGetSubgraphCalibration() can incorrectly return failure even
+when every parameter in the subgraph was calibrated successfully,
+because DataProcIsHwAccelParam()'s AR_ENOTEXIST result leaked into
+the shared status variable. Fix by storing it in a local variable
+(hw_status) for the ACDB_HW_ACCEL_MEM_DEFAULT case.
+
+Change-Id: I631cb0c5b53d15c18b672eca32cffe96ca1ed245
+Signed-off-by: Kumar Anurag <kumar.singh@oss.qualcomm.com>
+---
+ acdb/src/acdb_command.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/acdb/src/acdb_command.c b/acdb/src/acdb_command.c
+index 4ad036d..334e0ed 100644
+--- a/acdb/src/acdb_command.c
++++ b/acdb/src/acdb_command.c
+@@ -5357,13 +5357,19 @@ int32_t AcdbGetSubgraphCalibration(AcdbAudioCalContextInfo *info,
+ 
+         if (info->should_check_hw_accel)
+         {
+-            status = DataProcIsHwAccelParam(info->hw_accel_module_list_offset,
++            /*
++             * Use a local variable for HW Accel check result so that
++             * function-level status is not overwritten by AR_ENOTEXIST
++             * from non-target memory type parameters.
++             */
++            int32_t hw_status = DataProcIsHwAccelParam(
++                info->hw_accel_module_list_offset,
+                 module_header.module_iid, module_header.parameter_id);
+ 
+             switch (mem_type)
+             {
+             case ACDB_HW_ACCEL_MEM_DEFAULT:
+-                if (AR_SUCCEEDED(status))
++                if (AR_SUCCEEDED(hw_status))
+                 {
+                     cur_dot_offset += sizeof(uint32_t);
+                     continue;
+-- 
+2.34.1
+
